@@ -309,7 +309,7 @@ class RequestDescription
                 return;
             }
             $ymlDir = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR .
-                'POData' . DIRECTORY_SEPARATOR . 'Writers' . DIRECTORY_SEPARATOR . 'YML';
+                'POData' . DIRECTORY_SEPARATOR . 'Writers' . DIRECTORY_SEPARATOR . 'Atom' . DIRECTORY_SEPARATOR . 'YML';
             $serialize =
                 SerializerBuilder::create()
                     ->addMetadataDir($ymlDir)
