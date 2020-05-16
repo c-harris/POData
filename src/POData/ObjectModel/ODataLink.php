@@ -45,7 +45,7 @@ class ODataLink
      *
      * @var ODataEntry|ODataFeed
      */
-    public $expandedResult;
+    private $expandedResult;
     /**
      * True if Link is Expanded, False if not.
      *
@@ -189,11 +189,14 @@ class ODataLink
         if (!$this->isExpanded) {
             return null;
         }
+        if($this->expandedResult === null){
+            return null;
+        }
         if ($this->isCollection) {
             assert($this->expandedResult instanceof ODataFeed);
             return new ODataExpandedResult($this->expandedResult);
         }
-        assert($this->expandedResult instanceof ODataEntry);
+        assert($this->expandedResult instanceof ODataEntry, get_class($this->expandedResult));
         return new ODataExpandedResult($this->expandedResult);
     }
 
