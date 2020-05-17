@@ -222,12 +222,10 @@ class ODataLink
      */
     public function isEmpty()
     {
-        return !(isset($this->isExpanded) ||
-            isset($this->isCollection) ||
-            isset($this->expandedResult) ||
-            isset($this->title) ||
-            isset($this->type) ||
-            isset($this->name) ||
-            isset($this->url));
+        return !array_reduce(
+            ['isExpanded', 'isCollection', 'expandedResult', 'title', 'type', 'name', 'url'],
+            function ($carry, $value){
+                return $carry || isset($this->{$value});
+            }, false);
     }
 }
