@@ -34,6 +34,7 @@ class AtomODataWriterTest extends TestCase
 {
     public function setUp()
     {
+        parent::setUp();
         $this->mockProvider = m::mock(ProvidersWrapper::class)->makePartial();
     }
 
@@ -269,9 +270,9 @@ xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
         $entry1->editLink = $editLink;
 
         $selfLink        = new ODataLink('self', 'self Link Title', '', 'Self Link URL');
-
+        $etag = time();
         $entry1->setSelfLink($selfLink);
-        $entry1->mediaLink  = new ODataMediaLink('Thumbnail_600X450', 'http://storage.live.com/123/christmas-tree-with-presents.jpg', 'http://cdn-8.nflximg.com/US/boxshots/large/5632678.jpg', 'image/jpg', time());
+        $entry1->mediaLink  = new ODataMediaLink('Thumbnail_600X450', 'http://storage.live.com/123/christmas-tree-with-presents.jpg', 'http://cdn-8.nflximg.com/US/boxshots/large/5632678.jpg', 'image/jpg', $etag);
         $entry1->mediaLinks = [new ODataMediaLink(
             'Media Link Name',
             'Edit Media link',
@@ -295,17 +296,32 @@ xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
         $propCont                = new ODataPropertyContent([]);
         $entry1->propertyContent = $propCont;
         $entry1->type            = new ODataCategory('');
-
+        $now = new Carbon('2020-05-17T08:03:24-06:00');
+        Carbon::setTestNow($now);
         $writer = new AtomODataWriter(PHP_EOL, true, 'http://localhost/NorthWind.svc');
         $result = $writer->write($entry1);
         $this->assertSame($writer, $result);
 
         $actual   = $writer->getOutput();
-        $expected = '<x/>';
+        $expected = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<entry xml:base="http://localhost/NorthWind.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom" m:etag="Entry ETag">
+    <id>Entry 1</id>
+    <title type="text">Entry Title</title>
+    <updated>2020-05-17T08:03:24-06:00</updated>
+    <author>
+        <name/>
+    </author>
+    <link rel="edit" title="Entry Title" href="Edit Link URL"/>
+    <link m:etag="'.$etag.'" rel="edit-media" type="image/jpg" title="Thumbnail_600X450" href="http://storage.live.com/123/christmas-tree-with-presents.jpg"/>
+    <link m:etag="Media ETag" rel="http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource/Media Link Name" type="Media Content Type" title="Media Link Name" href="Edit Media link"/>
+    <link m:etag="Media ETag2" rel="http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource/Media Link Name2" type="Media Content Type2" title="Media Link Name2" href="Edit Media link2"/>
+    <category term="" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="image/jpg" src="http://cdn-8.nflximg.com/US/boxshots/large/5632678.jpg"/>
+    <m:properties/>
+</entry>
+';
 
-        $this->markTestSkipped('see #75 DOMDocument::loadXML(): Namespace prefix m for etag on entry is not defined in Entity, line: 2');
-
-        $this->assertXmlStringEqualsXmlString($this->removeUpdatedTags($expected), $actual);
+        $this->assertXmlStringEqualsXmlString($expected, $actual);
     }
 
     /**
@@ -563,7 +579,6 @@ $etag = time();
         );
         $entry1->propertyContent = $propCont;
         $entry1->type            = new ODataCategory('');
-        DateTime::setTimeProvider([new Carbon(), 'now']);
 
         $now = new Carbon('2020-05-17T08:03:24-06:00');
         Carbon::setTestNow($now);
