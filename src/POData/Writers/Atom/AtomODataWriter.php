@@ -614,7 +614,7 @@ class AtomODataWriter implements IODataWriter
             $this->xmlWriter->endAttribute();
         }
 
-        $effectiveTitle = $entry->title instanceof ODataTitle ? $entry->title->getTitle() : $entry->title;
+        $effectiveTitle = $entry->getTitle()->getTitle();
         $this
             ->writeNodeValue(ODataConstants::ATOM_ID_ELEMENT_NAME, $entry->id)
             ->writeNodeAttributeValue(
