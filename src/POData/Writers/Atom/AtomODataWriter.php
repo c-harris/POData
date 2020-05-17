@@ -464,7 +464,7 @@ class AtomODataWriter implements IODataWriter
             $this->writeBaseUriAndDefaultNamespaces();
         }
 
-        $effectiveTitle = $feed->title instanceof ODataTitle ? $feed->title->getTitle() : $feed->title;
+        $effectiveTitle = $feed->getTitle()->getTitle();
         $this
             ->writeNodeAttributeValue(
                 ODataConstants::ATOM_TITLE_ELELMET_NAME,
