@@ -224,8 +224,10 @@ class ODataLink
     {
         return !array_reduce(
             ['isExpanded', 'isCollection', 'expandedResult', 'title', 'type', 'name', 'url'],
-            function ($carry, $value){
+            function ($carry, $value) {
                 return $carry || isset($this->{$value});
-            }, false);
+            },
+            false
+        );
     }
 }
